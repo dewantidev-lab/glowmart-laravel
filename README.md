@@ -1,64 +1,124 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# GlowMart REST API
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+GlowMart REST API adalah layanan backend berbasis Laravel untuk mengelola data produk dan kategori pada aplikasi toko kecantikan. API ini menyediakan autentikasi pengguna, pengelolaan data, pencarian dan filter produk, validasi input, serta upload gambar produk.
 
-## About Laravel
+## Teknologi yang Digunakan
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8
+- Laravel 9
+- MySQL
+- Laravel Sanctum
+- Postman
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Fitur
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Registrasi dan login pengguna
+- Autentikasi menggunakan Bearer Token
+- Melihat profil pengguna dan logout
+- CRUD produk dan kategori
+- Validasi input menggunakan Form Request
+- Pencarian produk berdasarkan nama
+- Filter produk berdasarkan kategori dan rentang harga
+- Upload gambar produk dengan validasi file
 
-## Learning Laravel
+## Persyaratan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP dan Composer
+- MySQL
+- Git
+- Postman
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Instalasi
 
-## Laravel Sponsors
+1. Clone repository:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+   ```bash
+   git clone https://github.com/dewantidev-lab/glowmart-laravel.git
+   ```
 
-### Premium Partners
+2. Masuk ke folder project:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+   ```bash
+   cd glowmart-laravel
+   ```
 
-## Contributing
+3. Instal dependency:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+   ```bash
+   composer install
+   ```
 
-## Code of Conduct
+4. Salin file konfigurasi:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   ```bash
+   copy .env.example .env
+   ```
 
-## Security Vulnerabilities
+   Jika menggunakan macOS atau Linux, gunakan `cp .env.example .env`.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. Atur konfigurasi database MySQL di file `.env`.
 
-## License
+6. Buat database sesuai nama yang tercantum pada konfigurasi, lalu jalankan:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+   ```bash
+   php artisan key:generate
+   php artisan migrate
+   php artisan storage:link
+   php artisan serve
+   ```
+
+## Endpoint API
+
+### Authentication
+
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| POST | `/api/register` | Registrasi pengguna |
+| POST | `/api/login` | Login pengguna |
+| GET | `/api/profile` | Melihat profil |
+| POST | `/api/logout` | Logout pengguna |
+
+### Products
+
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| GET | `/api/products` | Melihat daftar produk |
+| GET | `/api/products/{product}` | Melihat detail produk |
+| POST | `/api/products` | Menambahkan produk |
+| PUT/PATCH | `/api/products/{product}` | Memperbarui produk |
+| DELETE | `/api/products/{product}` | Menghapus produk |
+
+### Categories
+
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| GET | `/api/categories` | Melihat daftar kategori |
+| GET | `/api/categories/{category}` | Melihat detail kategori |
+| POST | `/api/categories` | Menambahkan kategori |
+| PUT/PATCH | `/api/categories/{category}` | Memperbarui kategori |
+| DELETE | `/api/categories/{category}` | Menghapus kategori |
+
+## Pencarian dan Filter Produk
+
+Endpoint `/api/products` mendukung parameter berikut:
+
+- `search`: mencari produk berdasarkan nama.
+- `category_id`: memfilter produk berdasarkan kategori.
+- `min_price`: menentukan harga minimum.
+- `max_price`: menentukan harga maksimum.
+
+Contoh:
+
+```text
+/api/products?search=Facial
+/api/products?category_id=1
+/api/products?min_price=30000&max_price=50000
+```
+
+## Pengujian API
+
+Pengujian endpoint dilakukan menggunakan Postman, mencakup autentikasi, pengelolaan produk dan kategori, pencarian, filter, validasi input, serta upload gambar.
+
+## Catatan Keamanan
+
+Jangan mengunggah file `.env`, password database, atau token autentikasi ke repository publik.

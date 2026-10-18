@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    /**
+     * Menampilkan daftar produk dan mendukung pencarian serta filter.
+     */
     public function index(Request $request)
     {
         $query = Product::with('category');
@@ -31,83 +35,120 @@ class ProductController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
+        $products = $query->latest()->paginate(10);
+
         return response()->json([
             'success' => true,
-            'data' => $query->latest()->paginate(10),
-        ]);
+            'data' => $products
+        ], 200);
     }
 
-    
-public function store(StoreProductRequest $request)
-{
-    $validated = $request->validated();
-
-    $validated['slug'] = Str::slug($validated['name'])
-        . '-' . Str::uuid();
-
-    if ($request->hasFile('img')) {
-        $validated['img'] = $request->file('img')
-            ->store('products', 'public');
-    }
-
-    $product = Product::create($validated);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Produk berhasil ditambahkan.',
-        'data' => $product->load('category'),
-    ], 201);
-}
-
-    
-public function update(UpdateProductRequest $request, string $id)
-{
-    $product = Product::find($id);
-
-    if (!$product) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Produk tidak ditemukan.',
-        ], 404);
-    }
-
-    $validated = $request->validated();
-
-    if (isset($validated['name'])) {
-        $validated['slug'] = Str::slug($validated['name'])
-            . '-' . Str::uuid();
-    }
-
-    if ($request->hasFile('img')) {
-        $validated['img'] = $request->file('img')
-            ->store('products', 'public');
-    }
-
-    $product->update($validated);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Produk berhasil diperbarui.',
-        'data' => $product->fresh()->load('category'),
-    ]);
-}
-
-    public function destroy(string $id)
+    /**
+     * Menyimpan produk baru.
+     */
+    public function store(StoreProductRequest $request)
     {
-        $product = Product::find($id);
+        $data = $request->validated();
+
+        $data['slug'] = Str::slug($data['name']) . '-' . Str::uuid();
+
+        if ($request->hasFile('img')) {
+            $data['img'] = $request->file('img')
+                ->store('products', 'public');
+        }
+
+        $product = Product::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Product created successfully',
+            'data' => $product->load('category')
+        ], 201);
+    }
+
+    /**
+     * Menampilkan detail satu produk berdasarkan product_id.
+     */
+    public function show($id)
+    {
+        $product = Product::with('category')
+            ->where('product_id', $id)
+            ->first();
 
         if (!$product) {
             return response()->json([
                 'success' => false,
-                'message' => 'Produk tidak ditemukan.',
+                'message' => 'Product not found'
             ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $product
+        ], 200);
+    }
+
+    /**
+     * Memperbarui produk.
+     */
+    public function update(UpdateProductRequest $request, $id)
+    {
+        $product = Product::where('product_id', $id)->first();
+
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found'
+            ], 404);
+        }
+
+        $data = $request->validated();
+
+        if (isset($data['name'])) {
+            $data['slug'] = Str::slug($data['name']) . '-' . Str::uuid();
+        }
+
+        if ($request->hasFile('img')) {
+            if ($product->img) {
+                Storage::disk('public')->delete($product->img);
+            }
+
+            $data['img'] = $request->file('img')
+                ->store('products', 'public');
+        }
+
+        $product->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Product updated successfully',
+            'data' => $product->fresh()->load('category')
+        ], 200);
+    }
+
+    /**
+     * Menghapus produk.
+     */
+    public function destroy($id)
+    {
+        $product = Product::where('product_id', $id)->first();
+
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found'
+            ], 404);
+        }
+
+        if ($product->img) {
+            Storage::disk('public')->delete($product->img);
         }
 
         $product->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Produk berhasil dihapus.',
-        ]);
+            'message' => 'Product deleted successfully'
+        ], 200);
     }
 }
